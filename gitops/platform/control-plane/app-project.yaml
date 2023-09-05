@@ -28,6 +28,8 @@ spec:
     kind: Deployment
   - group: 'apps'
     kind: StatefulSet
+  - group: 'apps'
+    kind: ReplicaSet
   - group: ''
     kind: Service
   - group: ''
