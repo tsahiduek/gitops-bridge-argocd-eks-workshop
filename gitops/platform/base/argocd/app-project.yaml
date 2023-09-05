@@ -2,6 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: workloads
+  namespace: argocd
 spec:
   sourceRepos:
   - '*' # For workshop and demos set this to '*', for production close it down to specific git repositories

@@ -8,15 +8,10 @@ spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
   generators:
-    - clusters:
-        selector:
-          matchExpressions:
-            - key: environment
-              operator: NotIn
-              values: [control-plane]
+    - clusters: {}
   template:
     metadata:
-      name: 'platform'
+      name: 'platform-{{metadata.labels.environment}}'
     spec:
       project: default
       source:
@@ -24,7 +19,6 @@ spec:
         path: '{{metadata.annotations.platform_repo_path}}/{{metadata.labels.environment}}'
         targetRevision: '{{metadata.annotations.platform_repo_revision}}'
       destination:
-        namespace: '*'
         name: '{{name}}'
       syncPolicy:
         automated: {}
