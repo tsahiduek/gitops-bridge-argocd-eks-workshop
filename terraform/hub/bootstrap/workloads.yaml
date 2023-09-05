@@ -16,7 +16,7 @@ spec:
               values: [control-plane]
   template:
     metadata:
-      name: 'workloads'
+      name: 'workloads-{{metadata.labels.environment}}'
     spec:
       project: workloads
       source:
@@ -24,7 +24,7 @@ spec:
         path: '{{metadata.annotations.workload_repo_path}}/{{metadata.labels.environment}}'
         targetRevision: '{{metadata.annotations.workload_repo_revision}}'
       destination:
-        namespace: '*'
+        namespace: '{{path.basename}}'
         name: '{{name}}'
       syncPolicy:
         automated: {}
