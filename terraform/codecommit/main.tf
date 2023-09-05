@@ -73,27 +73,3 @@ resource "aws_iam_user_policy_attachment" "gitops_access" {
   user       = aws_iam_user.gitops.name
   policy_arn = aws_iam_policy.gitops_access.arn
 }
-
-output "environment" {
-  value = <<EOF
-export GITOPS_IAM_SSH_KEY_ID=${aws_iam_user_ssh_key.gitops.id}
-export GITOPS_IAM_SSH_USER=${aws_iam_user.gitops.unique_id}
-export GITOPS_REPO_URL_ARGOCD=${local.gitops_workload_url}
-EOF
-}
-
-output "gitops_workload_org" {
-  value = local.gitops_workload_org
-}
-output "gitops_workload_repo" {
-  value = local.gitops_workload_repo
-}
-output "gitops_workload_url" {
-  value = local.gitops_workload_url
-}
-output "configure_argocd" {
-  value = "argocd repo add ${local.gitops_workload_url} --ssh-private-key-path $${HOME}/.ssh/gitops_ssh.pem --insecure-ignore-host-key --upsert --name git-repo"
-}
-output "git_clone" {
-  value = "git clone ${local.gitops_workload_url} gitops-bridge-eks-workshop"
-}
