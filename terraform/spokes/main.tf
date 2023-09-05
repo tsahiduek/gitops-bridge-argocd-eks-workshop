@@ -62,15 +62,26 @@ provider "kubernetes" {
 
 
 locals {
-  name                   = "hub-spoke-${terraform.workspace}"
+  name                   = "spoke-${terraform.workspace}"
   environment            = terraform.workspace
   region                 = "us-west-2"
   cluster_version        = var.kubernetes_version
   vpc_cidr               = var.vpc_cidr
-  gitops_addons_url      = "${var.gitops_addons_org}/${var.gitops_addons_repo}"
-  gitops_addons_basepath = var.gitops_addons_basepath
-  gitops_addons_path     = var.gitops_addons_path
-  gitops_addons_revision = var.gitops_addons_revision
+  gitops_addons_org      = data.terraform_remote_state.cluster_hub.outputs.gitops_addons_org
+  gitops_addons_url      = "${local.gitops_addons_org}/${data.terraform_remote_state.cluster_hub.outputs.gitops_addons_repo}"
+  gitops_addons_basepath = data.terraform_remote_state.cluster_hub.outputs.gitops_addons_basepath
+  gitops_addons_path     = data.terraform_remote_state.cluster_hub.outputs.gitops_addons_path
+  gitops_addons_revision = data.terraform_remote_state.cluster_hub.outputs.gitops_addons_revision
+
+  gitops_platform_org      = data.terraform_remote_state.cluster_hub.outputs.gitops_platform_org
+  gitops_platform_url      = "${local.gitops_platform_org}/${data.terraform_remote_state.cluster_hub.outputs.gitops_platform_repo}"
+  gitops_platform_path     = data.terraform_remote_state.cluster_hub.outputs.gitops_platform_path
+  gitops_platform_revision = data.terraform_remote_state.cluster_hub.outputs.gitops_platform_revision
+
+  gitops_workload_org      = data.terraform_remote_state.cluster_hub.outputs.gitops_workload_org
+  gitops_workload_url      = "${local.gitops_workload_org}/${data.terraform_remote_state.cluster_hub.outputs.gitops_workload_repo}"
+  gitops_workload_path     = data.terraform_remote_state.cluster_hub.outputs.gitops_workload_path
+  gitops_workload_revision = data.terraform_remote_state.cluster_hub.outputs.gitops_workload_revision
 
   aws_addons = {
     enable_cert_manager = true
@@ -88,7 +99,7 @@ locals {
     #enable_karpenter                             = true
     #enable_velero                                = true
     #enable_aws_gateway_api_controller            = true
-    #enable_aws_ebs_csi_resources                 = true # generate gp2 and gp3 storage classes for ebs-csi
+    enable_aws_ebs_csi_resources                 = true # generate gp2 and gp3 storage classes for ebs-csi
     #enable_aws_secrets_store_csi_driver_provider = true
   }
   oss_addons = {
@@ -123,6 +134,16 @@ locals {
       addons_repo_basepath = local.gitops_addons_basepath
       addons_repo_path     = local.gitops_addons_path
       addons_repo_revision = local.gitops_addons_revision
+    },
+    {
+      workload_repo_url      = local.gitops_workload_url
+      workload_repo_path     = local.gitops_workload_path
+      workload_repo_revision = local.gitops_workload_revision
+    },
+    {
+      platform_repo_url      = local.gitops_platform_url
+      platform_repo_path     = local.gitops_platform_path
+      platform_repo_revision = local.gitops_platform_revision
     }
   )
 
@@ -184,7 +205,7 @@ module "gitops_bridge_bootstrap_hub" {
 
   argocd_create_install        = false # We are not installing argocd via helm on hub cluster
   argocd_cluster               = module.gitops_bridge_metadata_hub.argocd
-  argocd_bootstrap_app_of_apps = local.argocd_bootstrap_app_of_apps
+  #argocd_bootstrap_app_of_apps = local.argocd_bootstrap_app_of_apps
 }
 
 ################################################################################
@@ -295,6 +316,11 @@ module "eks" {
         }
       })
     }
+    aws-ebs-csi-driver = {
+      before_compute           = true
+      most_recent              = true
+      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
+    }
   }
   tags = local.tags
 }
@@ -322,6 +348,24 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
+  }
+
+  tags = local.tags
+}
+
+module "ebs_csi_driver_irsa" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
+  version = "~> 5.14"
+
+  role_name_prefix = "${local.name}-ebs-csi-driver-"
+
+  attach_ebs_csi_policy = true
+
+  oidc_providers = {
+    main = {
+      provider_arn               = module.eks.oidc_provider_arn
+      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
+    }
   }
 
   tags = local.tags

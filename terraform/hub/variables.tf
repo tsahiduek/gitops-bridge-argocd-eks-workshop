@@ -19,6 +19,40 @@ variable "gitops_addons_revision" {
   default     = "HEAD"
 }
 
+variable "gitops_platform_org" {
+  description = "Git repository org/user contains for workload"
+  default     = "https://github.com/csantanapr"
+}
+variable "gitops_platform_repo" {
+  description = "Git repository contains for workload"
+  default     = "gitops-bridge-eks-workshop"
+}
+variable "gitops_platform_path" {
+  description = "Git repository path for workload"
+  default     = "gitops/platform"
+}
+variable "gitops_platform_revision" {
+  description = "Git repository revision/branch/ref for workload"
+  default     = "HEAD"
+}
+
+variable "gitops_workload_org" {
+  description = "Git repository org/user contains for workload"
+  default     = "https://github.com/csantanapr"
+}
+variable "gitops_workload_repo" {
+  description = "Git repository contains for workload"
+  default     = "gitops-bridge-eks-workshop"
+}
+variable "gitops_workload_path" {
+  description = "Git repository path for workload"
+  default     = "gitops/apps/watch-store"
+}
+variable "gitops_workload_revision" {
+  description = "Git repository revision/branch/ref for workload"
+  default     = "HEAD"
+}
+
 
 variable "vpc_cidr" {
   description = "VPC CIDR"

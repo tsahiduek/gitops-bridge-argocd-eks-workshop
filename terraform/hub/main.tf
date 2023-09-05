@@ -43,15 +43,29 @@ provider "kubernetes" {
 }
 
 locals {
-  name                   = "hub-spoke-${local.environment}"
+  name                   = "hub-cluster"
   environment            = "control-plane"
   region                 = "us-west-2"
   cluster_version        = var.kubernetes_version
   vpc_cidr               = var.vpc_cidr
+
+  gitops_addons_org      = var.gitops_addons_org
   gitops_addons_url      = "${var.gitops_addons_org}/${var.gitops_addons_repo}"
   gitops_addons_basepath = var.gitops_addons_basepath
   gitops_addons_path     = var.gitops_addons_path
   gitops_addons_revision = var.gitops_addons_revision
+
+  gitops_platform_org      = var.gitops_platform_org
+  gitops_platform_repo     = var.gitops_platform_repo
+  gitops_platform_path     = var.gitops_platform_path
+  gitops_platform_revision = var.gitops_platform_revision
+  gitops_platform_url      = "${local.gitops_platform_org}/${local.gitops_platform_repo}"
+
+  gitops_workload_org      = var.gitops_workload_org
+  gitops_workload_repo     = var.gitops_workload_repo
+  gitops_workload_path     = var.gitops_workload_path
+  gitops_workload_revision = var.gitops_workload_revision
+  gitops_workload_url      = "${local.gitops_workload_org}/${local.gitops_workload_repo}"
 
   argocd_namespace = "argocd"
 
@@ -64,14 +78,14 @@ locals {
     #enable_cluster_autoscaler                    = true
     #enable_external_dns                          = true
     #enable_external_secrets                      = true
-    enable_aws_load_balancer_controller          = true
+    enable_aws_load_balancer_controller = true
     #enable_fargate_fluentbit                     = true
     #enable_aws_for_fluentbit                     = true
     #enable_aws_node_termination_handler          = true
     #enable_karpenter                             = true
     #enable_velero                                = true
     #enable_aws_gateway_api_controller            = true
-    enable_aws_ebs_csi_resources                  = true # generate gp2 and gp3 storage classes for ebs-csi
+    enable_aws_ebs_csi_resources = true # generate gp2 and gp3 storage classes for ebs-csi
     #enable_aws_secrets_store_csi_driver_provider = true
     enable_aws_argocd = true
   }
@@ -116,6 +130,7 @@ locals {
 
   argocd_bootstrap_app_of_apps = {
     addons = file("${path.module}/bootstrap/addons.yaml")
+    addons = file("${path.module}/bootstrap/platform.yaml")
   }
 
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -269,6 +284,7 @@ module "eks" {
       })
     }
     aws-ebs-csi-driver = {
+      before_compute           = true
       most_recent              = true
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
     }

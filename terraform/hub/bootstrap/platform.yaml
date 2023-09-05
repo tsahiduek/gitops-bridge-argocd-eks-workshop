@@ -20,11 +20,11 @@ spec:
     spec:
       project: default
       source:
-        repoURL: '{{metadata.annotations.workload_repo_url}}'
-        path: '{{metadata.annotations.workload_repo_path}}/{{metadata.labels.environment}}'
-        targetRevision: '{{metadata.annotations.workload_repo_revision}}'
+        repoURL: '{{metadata.annotations.platform_repo_url}}'
+        path: '{{metadata.annotations.platform_repo_path}}/{{metadata.labels.environment}}'
+        targetRevision: '{{metadata.annotations.platform_repo_revision}}'
       destination:
-        namespace: '{{metadata.annotations.external_secrets_namespace}}'
+        namespace: '*'
         name: '{{name}}'
       syncPolicy:
         automated: {}
