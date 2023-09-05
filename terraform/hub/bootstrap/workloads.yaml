@@ -24,7 +24,6 @@ spec:
         path: '{{metadata.annotations.workload_repo_path}}/{{metadata.labels.environment}}'
         targetRevision: '{{metadata.annotations.workload_repo_revision}}'
       destination:
-        namespace: '{{path.basename}}'
         name: '{{name}}'
       syncPolicy:
         automated: {}
