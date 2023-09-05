@@ -84,7 +84,7 @@ locals {
   gitops_workload_revision = data.terraform_remote_state.cluster_hub.outputs.gitops_workload_revision
 
   aws_addons = {
-    enable_cert_manager = true
+    #enable_cert_manager = true
     #enable_aws_efs_csi_driver                    = true
     #enable_aws_fsx_csi_driver                    = true
     #enable_aws_cloudwatch_metrics                = true
@@ -99,7 +99,7 @@ locals {
     #enable_karpenter                             = true
     #enable_velero                                = true
     #enable_aws_gateway_api_controller            = true
-    enable_aws_ebs_csi_resources                 = true # generate gp2 and gp3 storage classes for ebs-csi
+    #enable_aws_ebs_csi_resources                 = true # generate gp2 and gp3 storage classes for ebs-csi
     #enable_aws_secrets_store_csi_driver_provider = true
   }
   oss_addons = {
@@ -113,7 +113,7 @@ locals {
     #enable_ingress_nginx                         = true
     #enable_kyverno                               = true
     #enable_kube_prometheus_stack                 = true
-    enable_metrics_server = true
+    #enable_metrics_server = true
     #enable_prometheus_adapter                    = true
     #enable_secrets_store_csi_driver              = true
     #enable_vpa                                   = true
@@ -316,11 +316,6 @@ module "eks" {
         }
       })
     }
-    aws-ebs-csi-driver = {
-      before_compute           = true
-      most_recent              = true
-      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
-    }
   }
   tags = local.tags
 }
@@ -348,24 +343,6 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
-  }
-
-  tags = local.tags
-}
-
-module "ebs_csi_driver_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.14"
-
-  role_name_prefix = "${local.name}-ebs-csi-driver-"
-
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-    }
   }
 
   tags = local.tags

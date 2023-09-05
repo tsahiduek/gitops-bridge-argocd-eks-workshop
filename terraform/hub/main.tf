@@ -85,7 +85,7 @@ locals {
     #enable_karpenter                             = true
     #enable_velero                                = true
     #enable_aws_gateway_api_controller            = true
-    enable_aws_ebs_csi_resources = true # generate gp2 and gp3 storage classes for ebs-csi
+    #enable_aws_ebs_csi_resources = true # generate gp2 and gp3 storage classes for ebs-csi
     #enable_aws_secrets_store_csi_driver_provider = true
     enable_aws_argocd = true
   }
@@ -135,8 +135,8 @@ locals {
 
   argocd_bootstrap_app_of_apps = {
     addons = file("${path.module}/bootstrap/addons.yaml")
-    platform = file("${path.module}/bootstrap/platform.yaml")
-    workloads = file("${path.module}/bootstrap/workloads.yaml")
+    #platform = file("${path.module}/bootstrap/platform.yaml")
+    #workloads = file("${path.module}/bootstrap/workloads.yaml")
   }
 
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
@@ -289,11 +289,6 @@ module "eks" {
         }
       })
     }
-    aws-ebs-csi-driver = {
-      before_compute           = true
-      most_recent              = true
-      service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
-    }
   }
   tags = local.tags
 }
@@ -321,24 +316,6 @@ module "vpc" {
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
-  }
-
-  tags = local.tags
-}
-
-module "ebs_csi_driver_irsa" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-role-for-service-accounts-eks"
-  version = "~> 5.14"
-
-  role_name_prefix = "${local.name}-ebs-csi-driver-"
-
-  attach_ebs_csi_policy = true
-
-  oidc_providers = {
-    main = {
-      provider_arn               = module.eks.oidc_provider_arn
-      namespace_service_accounts = ["kube-system:ebs-csi-controller-sa"]
-    }
   }
 
   tags = local.tags
