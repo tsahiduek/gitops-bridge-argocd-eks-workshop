@@ -8,12 +8,20 @@ spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
   generators:
-    - clusters:
-        selector:
-          matchExpressions:
-            - key: environment
-              operator: NotIn
-              values: [control-plane]
+    # matrix 'parent' generator
+    - matrix:
+        generators:
+          # git generator, 'child' #1
+          - list:
+              elements:
+              - app: carts
+              - app: ui
+          - clusters:
+              selector:
+                matchExpressions:
+                  - key: environment
+                    operator: NotIn
+                    values: [control-plane]
   template:
     metadata:
       name: 'workloads-{{metadata.labels.environment}}'
@@ -21,9 +29,10 @@ spec:
       project: workloads
       source:
         repoURL: '{{metadata.annotations.workload_repo_url}}'
-        path: '{{metadata.annotations.workload_repo_path}}/{{metadata.labels.environment}}'
+        path: '{{metadata.annotations.workload_repo_path}}/{{app}}/{{metadata.labels.environment}}'
         targetRevision: '{{metadata.annotations.workload_repo_revision}}'
       destination:
+        namespace: '{{app}}'
         name: '{{name}}'
       syncPolicy:
         automated: {}

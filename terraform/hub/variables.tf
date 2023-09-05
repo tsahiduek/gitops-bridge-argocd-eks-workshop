@@ -46,7 +46,7 @@ variable "gitops_workload_repo" {
 }
 variable "gitops_workload_path" {
   description = "Git repository path for workload"
-  default     = "gitops/apps/watch-store"
+  default     = "gitops/apps"
 }
 variable "gitops_workload_revision" {
   description = "Git repository revision/branch/ref for workload"
