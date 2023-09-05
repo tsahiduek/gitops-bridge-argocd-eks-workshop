@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: platform
+  namespace: argocd
+spec:
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchExpressions:
+            - key: environment
+              operator: NotIn
+              values: [control-plane]
+  template:
+    metadata:
+      name: 'platform'
+    spec:
+      project: default
+      source:
+        repoURL: '{{metadata.annotations.workload_repo_url}}'
+        path: '{{metadata.annotations.workload_repo_path}}/{{metadata.labels.environment}}'
+        targetRevision: '{{metadata.annotations.workload_repo_revision}}'
+      destination:
+        namespace: '{{metadata.annotations.external_secrets_namespace}}'
+        name: '{{name}}'
+      syncPolicy:
+        automated: {}
+        retry:
+          backoff:
+            duration: 1m
+          limit: 10
+        syncOptions:
+          - CreateNamespace=true
