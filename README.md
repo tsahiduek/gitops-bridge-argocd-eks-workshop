@@ -7,8 +7,7 @@ This workshop covers the following use cases
 3. Use ACK to deploy DB for app store application
 
 
-## Deploy
-
+## Deploy Hub Cluster
 Deploy the Hub Cluster
 ```shell
 cd hub
@@ -18,13 +17,11 @@ terraform apply
 
 Access Terraform output for Hub Cluster
 ```shell
-cd hub
 terraform output
 ```
 
 Setup `kubectl` and `argocd` for Hub Cluster
 ```shell
-cd hub
 export KUBECONFIG="/tmp/hub-cluster"
 export ARGOCD_OPTS="--port-forward --port-forward-namespace argocd --grpc-web"
 aws eks --region us-west-2 update-kubeconfig --name hub-cluster
@@ -35,6 +32,8 @@ echo "ArgoCD Username: admin"
 echo "ArgoCD Password: $(kubectl get secrets argocd-initial-admin-secret -n argocd --template="{{index .data.password | base64decode}}")"
 ```
 
+## Deploy Staging Cluster
+
 Open a new Terminal and Deploy Staging Cluster
 ```shell
 cd spokes
@@ -43,21 +42,21 @@ cd spokes
 
 Setup `kubectl` for Staging Cluster
 ```shell
-cd spokes
 export KUBECONFIG="/tmp/spoke-staging"
 export ARGOCD_OPTS="--port-forward --port-forward-namespace argocd --grpc-web"
 aws eks --region us-west-2 update-kubeconfig --name spoke-staging
 ```
 
-Open a new Terminal and Deploy Staging Cluster
+## Deploy Prod Cluster
+
+Open a new Terminal and Deploy Production Cluster
 ```shell
 cd spokes
 ./deploy.sh prod
 ```
 
-Setup `kubectl` for Staging Cluster
+Setup `kubectl` for Production Cluster
 ```shell
-cd spokes
 export KUBECONFIG="/tmp/spoke-prod"
 export ARGOCD_OPTS="--port-forward --port-forward-namespace argocd --grpc-web"
 aws eks --region us-west-2 update-kubeconfig --name spoke-prod
@@ -66,13 +65,26 @@ aws eks --region us-west-2 update-kubeconfig --name spoke-prod
 
 Each environment uses a Terraform workspace
 
-Access Terraform output for each environment
+Access Terraform output for each environment, env is "staging" or "prod" from the `spokes` directory
 ```shell
-cd spokes
 terraform workspace select ${env}
 terraform output
 ```
 
+## Deploy Addons (On the Hub Cluster run the following command)
+```shell
+kubectl apply -f bootstrap/addons.yaml
+```
+
+## Deploy Namespaces and Argo Project (On the Hub Cluster run the following command)
+```shell
+kubectl apply -f bootstrap/platform.yaml
+```
+
+## Deploy Workloads (On the Hub Cluster run the following command)
+```shell
+kubectl apply -f bootstrap/workloads.yaml
+```
 
 ## Clean
 

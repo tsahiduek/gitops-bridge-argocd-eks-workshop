@@ -8,7 +8,10 @@ spec:
   syncPolicy:
     preserveResourcesOnDeletion: true
   generators:
-    - clusters: {}
+  - clusters:
+      selector:
+        matchLabels:
+          environment: control-plane
   template:
     metadata:
       name: 'cluster-addons'
@@ -16,7 +19,7 @@ spec:
       project: default
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
-        path: '{{metadata.annotations.addons_repo_basepath}}{{metadata.annotations.addons_repo_path}}'
+        path: 'argocd/{{metadata.annotations.addons_repo_path}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
         directory:
           recurse: true
