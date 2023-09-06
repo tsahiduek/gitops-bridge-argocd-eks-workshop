@@ -39,7 +39,7 @@ terraform output
 ```
 
 
-## Setup Staging Cluster
+## Setup Hub Cluster
 Setup `kubectl` and `argocd` for Hub Cluster
 ```shell
 export KUBECONFIG="/tmp/hub-cluster"
