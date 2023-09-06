@@ -8,19 +8,38 @@ This workshop covers the following use cases
 1. Makes changes to the app in production using gitops
 1. TODO: Have the carts backend use dynamodb deployed with ACK
 
-## Deploy Hub Cluster
+## Deploy Clusters
 Deploy the Hub Cluster
 ```shell
 cd terraform/hub
 terraform init
 terraform apply
 ```
-
 Access Terraform output for Hub Cluster
 ```shell
 terraform output
 ```
 
+Open a new Terminal and Deploy Staging Cluster
+```shell
+cd terraform/spokes
+./deploy.sh staging
+```
+Open a new Terminal and Deploy Production Cluster
+```shell
+cd terraform/spokes
+./deploy.sh prod
+```
+Each environment uses a Terraform workspace
+
+Access Terraform output for each environment, env is "staging" or "prod" from the `spokes` directory
+```shell
+terraform workspace select ${env}
+terraform output
+```
+
+
+## Setup Staging Cluster
 Setup `kubectl` and `argocd` for Hub Cluster
 ```shell
 export KUBECONFIG="/tmp/hub-cluster"
@@ -36,14 +55,7 @@ echo "ArgoCD Username: admin"
 echo "ArgoCD Password: $(kubectl get secrets argocd-initial-admin-secret -n argocd --template="{{index .data.password | base64decode}}")"
 ```
 
-## Deploy Staging Cluster
-
-Open a new Terminal and Deploy Staging Cluster
-```shell
-cd terraform/spokes
-./deploy.sh staging
-```
-
+## Setup Staging Cluster
 Setup `kubectl` for Staging Cluster
 ```shell
 export KUBECONFIG="/tmp/spoke-staging"
@@ -51,28 +63,12 @@ export ARGOCD_OPTS="--port-forward --port-forward-namespace argocd --grpc-web"
 aws eks --region us-west-2 update-kubeconfig --name spoke-staging
 ```
 
-## Deploy Prod Cluster
-
-Open a new Terminal and Deploy Production Cluster
-```shell
-cd terraform/spokes
-./deploy.sh prod
-```
-
+## Setup Prod Cluster
 Setup `kubectl` for Production Cluster
 ```shell
 export KUBECONFIG="/tmp/spoke-prod"
 export ARGOCD_OPTS="--port-forward --port-forward-namespace argocd --grpc-web"
 aws eks --region us-west-2 update-kubeconfig --name spoke-prod
-```
-
-
-Each environment uses a Terraform workspace
-
-Access Terraform output for each environment, env is "staging" or "prod" from the `spokes` directory
-```shell
-terraform workspace select ${env}
-terraform output
 ```
 
 ## Deploy Cluster Addons (On the Hub Cluster run the following command)
