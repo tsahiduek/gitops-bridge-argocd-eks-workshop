@@ -119,7 +119,7 @@ git push
 ```
 
 Make a change in production, like setting the `ui` replicas to 2.
-Update the `gitops/apps/ui/prod/kustomization,yaml`
+Update the `gitops/apps/ui/prod/kustomization.yaml`
 Uncomment the lines and save the file
 ```yaml
 patches:
