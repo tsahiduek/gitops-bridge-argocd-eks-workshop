@@ -3,8 +3,9 @@
 This workshop covers the following use cases
 
 1. Deploy hub-spoke clusters (hub, staging, prod)
-2. Deploy watch app store application on each environment cluster
-3. Use ACK to deploy DB for app store application
+1. Deploy namespaces and argocd project
+1. Deploy watch app store application on each environment cluster
+
 
 
 ## Deploy Hub Cluster
