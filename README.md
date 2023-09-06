@@ -71,7 +71,7 @@ terraform workspace select ${env}
 terraform output
 ```
 
-## Deploy Addons (On the Hub Cluster run the following command)
+## Deploy Cluster Addons (On the Hub Cluster run the following command)
 ```shell
 kubectl apply -f bootstrap/addons.yaml
 ```
@@ -85,6 +85,13 @@ kubectl apply -f bootstrap/platform.yaml
 ```shell
 kubectl apply -f bootstrap/workloads.yaml
 ```
+
+
+## Access UI on Staging or Production, pick the correct terminal
+```shell
+kubectl port-forward -n ui svc/ui 8080:80
+```
+Open browser on http://localhost:8080
 
 ## Clean
 

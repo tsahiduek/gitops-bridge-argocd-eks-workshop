@@ -24,7 +24,7 @@ spec:
                     values: [control-plane]
   template:
     metadata:
-      name: 'workloads-{{metadata.labels.environment}}'
+      name: 'workloads-{{metadata.labels.environment}}-{{app}}'
     spec:
       project: workloads
       source:
