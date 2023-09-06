@@ -76,7 +76,7 @@ aws eks --region us-west-2 update-kubeconfig --name spoke-prod
 kubectl apply -f bootstrap/addons.yaml
 ```
 
-## Deploy Namespaces and Argo Project (On the Hub Cluster run the following command)
+## Deploy Platform (On the Hub Cluster run the following command)
 ```shell
 kubectl apply -f bootstrap/platform.yaml
 ```
