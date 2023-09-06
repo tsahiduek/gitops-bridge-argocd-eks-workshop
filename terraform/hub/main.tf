@@ -134,7 +134,7 @@ locals {
   )
 
   argocd_bootstrap_app_of_apps = {
-    addons = file("${path.module}/bootstrap/addons.yaml")
+    #addons = file("${path.module}/bootstrap/addons.yaml")
     #platform = file("${path.module}/bootstrap/platform.yaml")
     #workloads = file("${path.module}/bootstrap/workloads.yaml")
   }
@@ -169,6 +169,12 @@ module "gitops_bridge_bootstrap" {
   argocd_bootstrap_app_of_apps = local.argocd_bootstrap_app_of_apps
   argocd = {
     namespace = local.argocd_namespace
+    values = [<<EOF
+      server:
+        service:
+          type: LoadBalancer
+      EOF
+    ]
   }
 }
 
