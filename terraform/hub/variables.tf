@@ -8,7 +8,7 @@ variable "gitops_addons_repo" {
 }
 variable "gitops_addons_basepath" {
   description = "Git repository base path for addons"
-  default     = "/argocd"
+  default     = "argocd/"
 }
 variable "gitops_addons_path" {
   description = "Git repository path for addons"

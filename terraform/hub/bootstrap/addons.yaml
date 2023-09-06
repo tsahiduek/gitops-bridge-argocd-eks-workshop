@@ -19,7 +19,7 @@ spec:
       project: default
       source:
         repoURL: '{{metadata.annotations.addons_repo_url}}'
-        path: 'argocd/{{metadata.annotations.addons_repo_path}}'
+        path: '{{metadata.annotations.addons_repo_basepath}}{{metadata.annotations.addons_repo_path}}'
         targetRevision: '{{metadata.annotations.addons_repo_revision}}'
         directory:
           recurse: true
