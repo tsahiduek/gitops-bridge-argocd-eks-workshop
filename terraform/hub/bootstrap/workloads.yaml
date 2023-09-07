@@ -14,7 +14,12 @@ spec:
           # git generator, 'child' #1
           - list:
               elements:
+              - app: assets
               - app: carts
+              - app: catalog
+              - app: checkout
+              - app: orders
+              - app: rabbitmq
               - app: ui
           - clusters:
               selector:

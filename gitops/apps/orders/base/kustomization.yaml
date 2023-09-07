@@ -2,5 +2,5 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: carts
 resources:
-- https://github.com/aws-samples/eks-workshop-v2//manifests/base-application/carts?ref=main
+- https://github.com/aws-samples/eks-workshop-v2//manifests/base-application/orders?ref=main
 
