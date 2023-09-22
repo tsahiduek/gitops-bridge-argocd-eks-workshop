@@ -16,6 +16,6 @@ set -x
 terraform workspace new $env
 terraform workspace select $env
 terraform init --backend-config="bucket=${backend-config-bucket}" \
---backend-config="key=${env}/terraform.tfstate" \ 
+--backend-config="key=${env}/terraform.tfstate" \
 --backend-config="region=${backend-config-region}"
 terraform apply -var-file="workspaces/${env}.tfvars"
