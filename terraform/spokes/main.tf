@@ -5,13 +5,6 @@ data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 
-data "terraform_remote_state" "cluster_hub" {
-  backend = "local"
-
-  config = {
-    path = "${path.module}/../hub/terraform.tfstate"
-  }
-}
 
 ################################################################################
 # Kubernetes Access for Hub Cluster
@@ -203,8 +196,8 @@ module "gitops_bridge_bootstrap_hub" {
     kubectl    = kubectl.hub
   }
 
-  argocd_create_install        = false # We are not installing argocd via helm on hub cluster
-  argocd_cluster               = module.gitops_bridge_metadata_hub.argocd
+  argocd_create_install = false # We are not installing argocd via helm on hub cluster
+  argocd_cluster        = module.gitops_bridge_metadata_hub.argocd
   #argocd_bootstrap_app_of_apps = local.argocd_bootstrap_app_of_apps
 }
 
